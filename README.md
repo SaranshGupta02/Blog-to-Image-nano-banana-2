@@ -78,4 +78,4 @@ src/
 | Variable | Description |
 |----------|-------------|
 | `GEMINI_API_KEY` | Your Google Gemini API key (required) |
-| `APP_URL` | Deployment URL (injected automatically by AI Studio) |
+| `APP_URL` | Deployment URL  |
