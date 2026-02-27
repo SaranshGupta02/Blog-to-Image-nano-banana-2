@@ -19,12 +19,12 @@ export async function generateIllustration(
   config: GenerationConfig
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
-  const stylePrompt = config.style === 'flat' 
+  const stylePrompt = config.style === 'flat'
     ? "Minimal flat illustration, clean lines, professional, modern, vector style, limited color palette."
     : "Modern digital illustration, high detail, professional editorial style, clean composition.";
-  
-  const lightingPrompt = config.isCinematicMode 
-    ? "Dramatic cinematic lighting, high contrast, atmospheric, volumetric light." 
+
+  const lightingPrompt = config.isCinematicMode
+    ? "Dramatic cinematic lighting, high contrast, atmospheric, volumetric light."
     : "Soft professional lighting.";
 
   const prompt = `A professional editorial illustration for a blog post titled "${heading}". 

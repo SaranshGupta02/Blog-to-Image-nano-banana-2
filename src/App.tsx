@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Image as ImageIcon, 
-  Type, 
-  Sparkles, 
-  Download, 
-  RefreshCw, 
-  Layout, 
-  Zap, 
+import {
+  Image as ImageIcon,
+  Type,
+  Sparkles,
+  Download,
+  RefreshCw,
+  Layout,
+  Zap,
   ChevronRight,
   Plus,
   Trash2,
@@ -68,7 +68,7 @@ export default function App() {
 
     lines.forEach((line) => {
       const headingMatch = line.match(/^(#{1,6})\s+(.*)/) || line.match(/^([A-Z][^a-z]*)$/);
-      
+
       if (headingMatch) {
         if (currentContent.length > 0 || currentHeading !== 'Introduction') {
           newSections.push({
@@ -107,17 +107,18 @@ export default function App() {
       try {
         const summary = await summarizeSection(section.content);
         const imageUrl = await generateIllustration(section.heading, summary, config);
-        
-        setSections(prev => prev.map(s => 
-          s.id === section.id 
-            ? { ...s, summary, imageUrl, isGenerating: false } 
+
+        setSections(prev => prev.map(s =>
+          s.id === section.id
+            ? { ...s, summary, imageUrl, isGenerating: false }
             : s
         ));
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         console.error(`Error generating for ${section.heading}:`, error);
-        setSections(prev => prev.map(s => 
-          s.id === section.id 
-            ? { ...s, isGenerating: false, error: 'Failed to generate' } 
+        setSections(prev => prev.map(s =>
+          s.id === section.id
+            ? { ...s, isGenerating: false, error: message }
             : s
         ));
       }
@@ -131,23 +132,25 @@ export default function App() {
     const section = sections.find(s => s.id === sectionId);
     if (!section) return;
 
-    setSections(prev => prev.map(s => 
+    setSections(prev => prev.map(s =>
       s.id === sectionId ? { ...s, isGenerating: true, error: undefined } : s
     ));
 
     try {
       const summary = section.summary || await summarizeSection(section.content);
       const imageUrl = await generateIllustration(section.heading, summary, config);
-      
-      setSections(prev => prev.map(s => 
-        s.id === sectionId 
-          ? { ...s, summary, imageUrl, isGenerating: false } 
+
+      setSections(prev => prev.map(s =>
+        s.id === sectionId
+          ? { ...s, summary, imageUrl, isGenerating: false }
           : s
       ));
     } catch (error) {
-      setSections(prev => prev.map(s => 
-        s.id === sectionId 
-          ? { ...s, isGenerating: false, error: 'Failed to regenerate' } 
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Error regenerating for ${sectionId}:`, error);
+      setSections(prev => prev.map(s =>
+        s.id === sectionId
+          ? { ...s, isGenerating: false, error: message }
           : s
       ));
     }
@@ -165,7 +168,7 @@ export default function App() {
   if (hasApiKey === false) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-[#050505]">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="glass max-w-md w-full p-10 rounded-[2.5rem] text-center"
@@ -177,7 +180,7 @@ export default function App() {
           <p className="text-zinc-400 mb-8 leading-relaxed">
             To use the high-quality <span className="text-emerald-400 font-semibold">Gemini 3.1 Flash</span> image model, you need to select a paid Google Cloud project API key.
           </p>
-          
+
           <div className="space-y-4">
             <button
               onClick={handleOpenKeySelector}
@@ -185,9 +188,9 @@ export default function App() {
             >
               Select API Key
             </button>
-            <a 
-              href="https://ai.google.dev/gemini-api/docs/billing" 
-              target="_blank" 
+            <a
+              href="https://ai.google.dev/gemini-api/docs/billing"
+              target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
             >
@@ -215,22 +218,20 @@ export default function App() {
               <p className="text-xs text-zinc-500 font-medium uppercase tracking-widest">Visual Storytelling Engine</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setConfig(prev => ({ ...prev, style: prev.style === 'cinematic' ? 'flat' : 'cinematic' }))}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${
-                config.style === 'flat' ? 'bg-zinc-100 text-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${config.style === 'flat' ? 'bg-zinc-100 text-zinc-900' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
             >
               <Layout size={14} />
               {config.style === 'flat' ? 'Flat Illustration' : 'Cinematic Style'}
             </button>
-            <button 
+            <button
               onClick={() => setConfig(prev => ({ ...prev, isCinematicMode: !prev.isCinematicMode }))}
-              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${
-                config.isCinematicMode ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${config.isCinematicMode ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                }`}
             >
               <Zap size={14} />
               {config.isCinematicMode ? 'Cinematic Lighting ON' : 'Standard Lighting'}
@@ -246,20 +247,20 @@ export default function App() {
             <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
               <Type size={200} />
             </div>
-            
+
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-6">
                 <Sparkles className="text-emerald-400 w-5 h-5" />
                 <h2 className="text-lg font-medium">Paste your blog content</h2>
               </div>
-              
+
               <textarea
                 value={blogText}
                 onChange={(e) => setBlogText(e.target.value)}
                 placeholder="Paste your full blog post here... Use # for headings to help the AI detect sections."
                 className="w-full h-64 bg-black/40 border border-white/10 rounded-2xl p-6 text-zinc-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none font-sans leading-relaxed"
               />
-              
+
               <div className="mt-8 flex items-center justify-between">
                 <div className="flex gap-4">
                   <button
@@ -280,7 +281,7 @@ export default function App() {
                     </button>
                   )}
                 </div>
-                
+
                 {sections.length > 0 && (
                   <p className="text-sm text-zinc-500">
                     Detected <span className="text-zinc-100 font-bold">{sections.length}</span> sections
@@ -308,8 +309,8 @@ export default function App() {
                   {/* Image Container */}
                   <div className="aspect-video bg-zinc-900 relative overflow-hidden">
                     {section.imageUrl ? (
-                      <img 
-                        src={section.imageUrl} 
+                      <img
+                        src={section.imageUrl}
                         alt={section.heading}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
@@ -328,18 +329,18 @@ export default function App() {
                         )}
                       </div>
                     )}
-                    
+
                     {/* Image Actions Overlay */}
                     {section.imageUrl && !section.isGenerating && (
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                        <button 
+                        <button
                           onClick={() => downloadImage(section.imageUrl!, section.heading)}
                           className="p-3 bg-white text-black rounded-full hover:scale-110 transition-transform"
                           title="Download Image"
                         >
                           <Download size={20} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => regenerateSingle(section.id)}
                           className="p-3 bg-white/10 text-white backdrop-blur-md rounded-full hover:scale-110 transition-transform border border-white/20"
                           title="Regenerate"
@@ -360,7 +361,7 @@ export default function App() {
                         <h3 className="text-xl font-bold tracking-tight text-white">{section.heading}</h3>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       {section.summary ? (
                         <p className="text-zinc-400 leading-relaxed italic">
@@ -372,7 +373,7 @@ export default function App() {
                           <div className="h-4 bg-white/5 rounded w-3/4 animate-pulse" />
                         </div>
                       )}
-                      
+
                       <div className="pt-4 border-t border-white/5">
                         <p className="text-xs text-zinc-600 line-clamp-3">
                           {section.content}
